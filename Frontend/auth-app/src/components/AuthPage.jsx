@@ -4,6 +4,7 @@ import { LoginPage } from "./LoginPage";
 import { SignupPage }from "./SignupPage";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { Nav } from "../ui/Nav";
 
 export const AuthPage = () => {
 
@@ -11,9 +12,12 @@ export const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(isLoginAuth);
 
   return (
+    <div>
+  <Nav />
+    
      <div className="min-h-screen flex items-center justify-center bg-gray-100">
       {/* Outer Container */}
-      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg">
+      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg  lg:mt-15 mt-30">
         {/* Render Login or Signup Page Dynamically */}
         {!isLogin ? <LoginPage /> : <SignupPage />}
 
@@ -38,6 +42,7 @@ export const AuthPage = () => {
           </Link>
         </div> */}
       </div>
+    </div>
     </div>
   );
 };

@@ -32,7 +32,9 @@ export const LoginPage = () => {
       toast.success("Login  Was successful");
       queryClient.setQueryData(["user"], data);
       reset();
-      dispatch(setCredentials({  user: data.user ,   // Store both token and user in Redux
+      dispatch(setCredentials({ 
+        token: data.token,
+        user: data.user 
       })); // Dispatch the action
     // Dispatch the action
     // dispatch(setCredentials({ token: data.token, user: data.user })); // Dispatch the action
@@ -45,8 +47,6 @@ export const LoginPage = () => {
   });
 
   const { errors } = formState;
-
-  // Handle Google Login Success
   const handleGoogleLoginSuccess = async (credentialResponse) => {
     try {
       const { credential } = credentialResponse;
@@ -58,12 +58,30 @@ export const LoginPage = () => {
       // Update react-query cache
       queryClient.setQueryData(["user"], user);
       
-      navigate('/home');
+      navigate('/user-Dashboard');
       toast.success('Google login successful');
     } catch (error) {
       toast.error(error.message || 'Google login failed');
     }
   };
+  // Handle Google Login Success
+//   const handleGoogleLoginSuccess = async (credentialResponse) => {
+//     try {
+//       const { credential } = credentialResponse;
+//       const { token, user } = await verifyGoogleToken(credential);
+      
+//       // Store both token and user in Redux
+//       dispatch(setCredentials({ token, user }));
+      
+//       // Update react-query cache
+//       queryClient.setQueryData(["user"], user);
+      
+//       navigate('/home');
+//       toast.success('Google login successful');
+//     } catch (error) {
+//       toast.error(error.message || 'Google login failed');
+//     }
+//   };
 
   return (
       <form

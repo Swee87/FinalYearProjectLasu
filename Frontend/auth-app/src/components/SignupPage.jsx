@@ -11,7 +11,7 @@ export const SignupPage = () => {
     const queryClient = useQueryClient();
     const [showVerifyOtp, setShowVerifyOtp] = useState(false);
     const { mutate, isLoading: isSigning } = useMutation({
-      mutationFn: ({ email, password }) => Register(email, password),
+      mutationFn: ({ email, password , LastName,FirstName }) => Register(email, password,LastName,FirstName),
       mutationKey: ["Register"],
       // data passed here is the data returned from the API
       // so we can use it to set the user data in the queryClient
@@ -37,19 +37,43 @@ export const SignupPage = () => {
     const { errors } = formState;
   return (
     <>
-    <form className="space-y-6"  onSubmit={handleSubmit(async (data) => {
-      const { email, password } = data;
+    <form className="space-y-1"  onSubmit={handleSubmit(async (data) => {
+      const { email, password , FirstName,LastName} = data;
       console.log("Email:", email, "Password:", password);
-       mutate({ email, password });
+       mutate({ email, password ,FirstName,LastName});
     })}
     onReset={reset}>
       <h2 className="text-3xl font-bold text-center text-gray-900">Sign Up</h2>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700">First Name</label>
+        <input
+          type="text"
+          placeholder="Enter your first name"
+          className="mt-1 block w-full px-2 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo"
+          {...register('FirstName', { required: 'First name is required' })}
+        />
+        {errors.FirstName && <p className="text-red-500">{errors.FirstName.message}</p>}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700">Last Name</label>
+        <input
+          type="text"
+          placeholder="Enter your last name"
+          className="mt-1 block w-full px-2 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo"
+          {...register('LastName', { required: 'Last name is required' })}
+        />
+        {errors.LastName && <p className="text-red-500">{errors.LastName.message}</p>}
+      </div>
+
+
       <div>
         <label className="block text-sm font-medium text-gray-700">Email</label>
         <input
           type="email"
           placeholder="Enter your email"
-          className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          className="mt-1 block w-full px-2 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           {...register('email', { required: 'Email is required' })}
         />
         {errors.email && <p className="text-red-500">{errors.email.message}</p>}
@@ -59,7 +83,7 @@ export const SignupPage = () => {
         <input
           type="password"
           placeholder="Enter your password"
-          className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          className="mt-1 block w-full px-2 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           {...register('password', { required: 'Password is required' })}
           
         />
@@ -67,7 +91,7 @@ export const SignupPage = () => {
       </div>
       <button
         type="submit"
-        className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        className="w-full flex justify-center px-2 py-2 border border-transparent rounded-md shadow-sm text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
       >
         Sign Up
       </button>
@@ -81,7 +105,7 @@ export const SignupPage = () => {
       </div>
       <button
         type="button"
-        className="w-full flex justify-center items-center py-3 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        className="w-full flex justify-center items-center px-2 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
       >
         <svg
           className="w-5 h-5 mr-2"

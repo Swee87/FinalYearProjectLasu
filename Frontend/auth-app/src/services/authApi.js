@@ -10,6 +10,7 @@ export async function Login(email, password) {
                 "Content-Type": "application/json",
                 // Include the token in the request headers
             },
+             credentials: 'include'
         });
 
         if (!res.ok) {
@@ -28,14 +29,13 @@ export async function Login(email, password) {
 }
 
 
-
-export async function Register(email, password) {
+export async function Register(email, password,LastName,FirstName) {
     try {
         
 
         const res = await fetch("http://localhost:5000/auth1/register", {
             method: "POST",
-            body: JSON.stringify({ email, password }),
+            body: JSON.stringify({ email, password ,LastName,FirstName}),
             headers: {
                 "Content-Type": "application/json",
                
@@ -125,7 +125,58 @@ export async function UpdateUserPassword({ tokenId, token, password }) {
         throw error;
     }
 }
+export async function RegisterAdmin(email, password,FirstName, LastName) {
+    try {
+        const res = await fetch("http://localhost:5000/auth1/register-administer", {
+            method: "POST",
+            body: JSON.stringify({ email, password ,FirstName, LastName}),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
 
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.message || "Failed to register admin");
+        }
+
+        const { data } = await res.json();
+        return { data };
+    } catch (error) {
+        console.error("Error registering admin:", error.message);
+        throw error;
+    }
+}
+
+
+export const LoginAdmin = async (email, password) => {
+    try{
+        // Check if email and password are provided
+        if (!email || !password) {
+            throw new Error("Email and password are required");
+        }
+            const res = await fetch("http://localhost:5000/auth1/admin-login", {
+                method: "POST",
+                body: JSON.stringify({ email, password }),      
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                credentials: "include" // 
+              });
+            
+              if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.message || "Failed to login admin");
+              }
+            
+              const {data }= await res.json();
+              return {data };
+    }catch (error) {
+        console.error("Error logging in admin:", error.message);
+        throw error; // Rethrow the error for the caller to handle
+    }
+   
+}
 // Function to handle Google login success
 // export const verifyGoogleToken = async (credential) => {
 //     try {
@@ -198,23 +249,48 @@ export const verifyGoogleToken = async (credential) => {
       throw error;
     }
   };
-  export async function fetchCurrentUser() {
+
+//   export async function fetchCurrentUser() {
+//     try {
+//       const response = await fetch("http://localhost:5000/auth/current", {
+//         method: "GET",
+//         credentials: 'include',
+//         headers: {
+//           'Cache-Control': 'no-cache',
+//           'Content-Type': 'application/json'
+//         },
+//         signal: AbortSignal.timeout(5000)
+//       });
+  
+//       const data = await response.json();
+  
+//       if (!response.ok) {
+//         // Clear cookie and throw error
+//         document.cookie = 'authtoken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+//         throw new Error(data.message || `Authentication failed`);
+//       }
+  
+//       return { user: data.user };
+//     } catch (error) {
+//       console.error("Auth check failed:", error);
+//       throw error;
+//     }
+//   }
+
+export async function fetchCurrentUser() {
     try {
       const response = await fetch("http://localhost:5000/auth/current", {
         method: "GET",
-        credentials: 'include',
+        credentials: 'include', 
         headers: {
-          'Cache-Control': 'no-cache',
-          'Content-Type': 'application/json'
+          'Cache-Control': 'no-cache'
         },
-        // Important for slow networks
-        signal: AbortSignal.timeout(5000) 
+        signal: AbortSignal.timeout(5000)
       });
   
       const data = await response.json();
   
       if (!response.ok) {
-        // Clear cookie if invalid
         if (response.status === 401) {
           document.cookie = 'authtoken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         }
@@ -273,6 +349,9 @@ export const refreshToken = async () => {
       throw error;
     }
   };
+
+
+
 // export async function fetchCurrentUser() {
 //     try {
 //         const res = await fetch("http://localhost:5000/auth/current", {

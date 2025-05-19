@@ -3,7 +3,8 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
     user: null,
     isAuthenticated: false,
-    isInitialized: false
+    isInitialized: false,
+    token: null,
 };
 
 const authSlice = createSlice({
@@ -12,9 +13,10 @@ const authSlice = createSlice({
     reducers: {
         setCredentials: (state, action) => {
             state.user = action.payload.user;
+            state.token = action.payload.token || null; // 👈 Optional: save token too
             state.isAuthenticated = true;
-            state.isInitialized = true; // Mark as initialized
-        },
+            state.isInitialized = true;
+          },
         clearCredentials: (state) => {
             state.user = null;
             state.isAuthenticated = false;

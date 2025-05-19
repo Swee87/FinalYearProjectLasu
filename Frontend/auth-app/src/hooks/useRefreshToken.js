@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { refreshToken } from '../services/authApi';
 import { useDispatch } from 'react-redux';
 import { setCredentials } from '../redux/authSlice';
+import { fetchCurrentUser } from '../services/authApi'; 
 
 export const useRefreshToken = () => {
   const dispatch = useDispatch();

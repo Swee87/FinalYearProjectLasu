@@ -75,7 +75,7 @@ export const Nav = () => {
           </li>
           <li>
             <motion.a
-              href="verify-lasu-staff"
+              href="register"
               whileHover={{
                 scale: 1.1,
                 boxShadow: "0 0 20px rgba(99, 102, 241, 0.5)"
