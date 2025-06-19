@@ -1,7 +1,8 @@
 // 1. Import required packages
-import { v2 as cloudinary } from 'cloudinary';
-import { v4 } from 'uuid';
-import { config } from 'dotenv';
+
+const { v2: cloudinary } = require('cloudinary');
+const { v4} = require('uuid');
+const { config } = require('dotenv'); 
 config(); // Load environment variables
 // 2. Configure Cloudinary
 cloudinary.config({
@@ -58,7 +59,7 @@ const getAssetInfo = async (publicId) => {
 };
 
 // 🔁 Export everything
-export {
+module.exports= {
   cloudinary,
   uploadToCloudinary,
   getTransformedImageTag,

@@ -174,6 +174,8 @@ const { mongoose, connectDB } = require('./config/db');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const app = express();
+const router = express.Router();
+
 
 // app.use(cors({
 //   origin: "http://localhost:5173",
@@ -190,6 +192,7 @@ app.use(cors({
 }));
 
 // Middleware
+router.use(express.json());
 app.use(express.json());
 app.use(cookieParser());
 
@@ -213,11 +216,17 @@ const OAuth2Routes = require('./routes/auth');
 const cooperativeRoutes = require('./routes/CoopAuth');
 const loanRoutes = require('./routes/upLoanpayslip');
 const verifyCoopRoutes = require('./routes/verifyCoop');
+const payStackRoutes = require('./routes/PayStackInitialize');
+const payStackVerifyRoutes = require('./routes/PayStackVerify');
+
+
 app.use('/CoopAuth', cooperativeRoutes);
 app.use('/auth1', authRoutes);
 app.use('/auth', OAuth2Routes);
 app.use('/upLoanpayslip', loanRoutes);
 app.use('/verifyCoop', verifyCoopRoutes);
+app.use('/PayStackInitialize', payStackRoutes);
+app.use('/PayStackVerify', payStackVerifyRoutes);
 
 // Health check
 app.get('/health', (req, res) => res.json({ status: 'OK' }));
