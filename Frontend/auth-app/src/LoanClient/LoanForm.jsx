@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaChevronLeft } from "react-icons/fa6";
@@ -6,7 +5,7 @@ import { Bounce } from "react-awesome-reveal";
 import toast, { Toaster } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import loanRequestImage from "../assets/images/Loan_request.jpeg"
+import loanRequestImage from "../assets/images/Loan_request.jpeg";
 
 import { getLoan } from "../services/LoanApi";
 
@@ -25,7 +24,7 @@ export function LoanForm() {
 
   // Mutation setup
   const { mutate, isPending } = useMutation({
-    mutationFn:(formData)=> getLoan(formData),
+    mutationFn: (formData) => getLoan(formData),
     onSuccess: () => {
       toast.success("Loan submitted successfully!");
       reset();
@@ -70,7 +69,11 @@ export function LoanForm() {
       <Bounce cascade>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div>
-            <img src={loanRequestImage} alt="Loan Request" className="w-full rounded-lg shadow-xl" />
+            <img
+              src={loanRequestImage}
+              alt="Loan Request"
+              className="w-full rounded-lg shadow-xl"
+            />
           </div>
 
           <Toaster />
@@ -104,36 +107,6 @@ export function LoanForm() {
               <p className="text-red-600">{errors.loanAmount?.message}</p>
             </div>
 
-            {/* Monthly Savings */}
-            <div className="p-2">
-              <label htmlFor="monthlySavings">
-                <span className="text-red-700 p-1">*</span>Monthly Savings Amount
-              </label>
-              <input
-                {...register("monthlySavings", {
-                  required: "This is required",
-                  min: {
-                    value: minMonthlySavings,
-                    message: `The minimum amount is ₦${minMonthlySavings.toLocaleString()}`,
-                  },
-                })}
-                id="monthlySavings"
-                type="number"
-                min={minMonthlySavings}
-                placeholder="Enter Your Monthly Savings Amount"
-                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400"
-                onChange={(e) => {
-                  const value = parseFloat(e.target.value);
-                  if (!isNaN(value) && value >= minMonthlySavings) {
-                    register("monthlySavings").onChange(e);
-                  }
-                }}
-              />
-              <p className="text-red-600 mt-1 h-5">
-                {errors.monthlySavings?.message || "\u00A0"}
-              </p>
-            </div>
-
             {/* Repayment Duration */}
             <div className="p-2">
               <label
@@ -159,6 +132,36 @@ export function LoanForm() {
                 </select>
                 <p className="text-red-600">{errors.repayment?.message}</p>
               </div>
+            </div>
+            {/* Monthly Savings */}
+            <div className="p-2">
+              <label htmlFor="monthlySavings">
+                <span className="text-red-700 p-1">*</span>Monthly Savings
+                Amount
+              </label>
+              <input
+                {...register("monthlySavings", {
+                  required: "This is required",
+                  min: {
+                    value: minMonthlySavings,
+                    message: `The minimum amount is ₦${minMonthlySavings.toLocaleString()}`,
+                  },
+                })}
+                id="monthlySavings"
+                type="number"
+                min={minMonthlySavings}
+                placeholder="Enter Your Monthly Savings Amount"
+                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400"
+                onChange={(e) => {
+                  const value = parseFloat(e.target.value);
+                  if (!isNaN(value) && value >= minMonthlySavings) {
+                    register("monthlySavings").onChange(e);
+                  }
+                }}
+              />
+              <p className="text-red-600 mt-1 h-5">
+                {errors.monthlySavings?.message || "\u00A0"}
+              </p>
             </div>
 
             {/* Purpose of Loan */}

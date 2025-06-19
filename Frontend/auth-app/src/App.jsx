@@ -1,26 +1,25 @@
 // src/App.js
 
-
-import React,{ useEffect }  from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { startInitialization } from "./redux/authSlice";
 import { FullPageLoadingSpinner } from "./components/FullPageLoadingSpinner";
 import { useNavigate } from "react-router-dom";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import{ AuthPage } from "./components/AuthPage";
+import { AuthPage } from "./components/AuthPage";
 import { ResetPasswordPage } from "./components/ResetPasswordPage";
 import { UpdatePassword } from "./components/UpdatePassword";
-import { GoogleOAuthProvider } from '@react-oauth/google';
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Toaster } from "react-hot-toast";
 import { LoginPage } from "./components/LoginPage";
 import { Loan } from "./Dashboard/Loan";
 import { LandingPage } from "./ui/landingPage";
-import {ProtectedRoute} from "./components/ProtectedRoute";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AuthInitializer } from "./components/AuthInitializer";
 import { VerifyStaff } from "./CoopMemberAuth/VerifyStaff";
 import { AdminRegister } from "./Admin/adminRegister";
-import {AdminAuthPage} from "./Admin/AdminAuth";
+import { AdminAuthPage } from "./Admin/AdminAuth";
 import { LoanForm } from "./LoanClient/LoanForm";
 import { LoanHistory } from "./LoanClient/LoanHistory";
 
@@ -29,7 +28,8 @@ import { LoanDetails } from "./Dashboard/LoanDetails";
 import { ClientDashboard } from "./ClientDashboard/clientdash";
 import { VerifyMemberShip } from "./ClientDashboard/verifyMembership";
 import { MembershipApproval } from "./Admin/approveMember";
-
+import { SaveDashboard } from "./SaveClient/SaveDashboard";
+import PayStack from "./SaveClient/PayStack";
 
 const Queryclient = new QueryClient({
   defaultOptions: {
@@ -40,7 +40,6 @@ const Queryclient = new QueryClient({
   },
 });
 function App() {
-
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -55,30 +54,88 @@ function App() {
           <Routes>
             <Route path="/register" element={<AuthPage />} />
             <Route path="/" element={<LandingPage />} />
-            <Route path="/user-Dashboard" element={
-              <ProtectedRoute>
-                  <ClientDashboard/>
+            <Route
+              path="/user-Dashboard"
+              element={
+                <ProtectedRoute>
+                  <ClientDashboard />
                 </ProtectedRoute>
-            }/>
-            <Route path="/loanSummary" element={<ProtectedRoute><Loan /></ProtectedRoute>} />
+              }
+            />
+            <Route
+              path="/loanSummary"
+              element={
+                <ProtectedRoute>
+                  <Loan />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/admin" element={<AdminAuthPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/update-password" element={<UpdatePassword />} />
-            <Route path="/verifyMembership" element={<VerifyMemberShip/>} />
-            <Route path="/loanform" element={<ProtectedRoute>
-              <LoanForm />
-            </ProtectedRoute>} />
-          <Route path="/loanhistory" element={<ProtectedRoute><LoanHistory /></ProtectedRoute>} />
-          <Route path="/loanDashboard" element={<ProtectedRoute><LoanDashboard /></ProtectedRoute>} />
-            <Route path="/loanDetail" element={<ProtectedRoute><LoanDetails/></ProtectedRoute>} />
-            <Route path="/membershipApproval" element={<ProtectedRoute><MembershipApproval/></ProtectedRoute>} />
+            <Route path="/verifyMembership" element={<VerifyMemberShip />} />
+            <Route
+              path="/loanform"
+              element={
+                <ProtectedRoute>
+                  <LoanForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/loanhistory"
+              element={
+                <ProtectedRoute>
+                  <LoanHistory />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/loanDashboard"
+              element={
+                <ProtectedRoute>
+                  <LoanDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/loanDetail"
+              element={
+                <ProtectedRoute>
+                  <LoanDetails />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/membershipApproval"
+              element={
+                <ProtectedRoute>
+                  <MembershipApproval />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/home"
               element={
                 <ProtectedRoute>
                   <LandingPage />
-                
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/savingDashboard"
+              element={
+                <ProtectedRoute>
+                  <SaveDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/payStackPayment"
+              element={
+                <ProtectedRoute>
+                  <PayStack />
                 </ProtectedRoute>
               }
             />
@@ -139,7 +196,7 @@ function App() {
 //         <Route path="/" element={<AuthPage />} />
 //         <Route path="/login" element={<LoginPage />} />
 //         <Route path="/reset-password" element={<ResetPasswordPage />} />
-//         <Route path="/update-password" element={<UpdatePassword />} />  
+//         <Route path="/update-password" element={<UpdatePassword />} />
 //        <Route path= '/home' element={<LandingPage />} />
 //       </Routes>
 //     </Router>

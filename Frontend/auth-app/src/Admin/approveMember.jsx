@@ -1,6 +1,6 @@
 // src/components/AdminDashboard.jsx
 import { useState, useEffect } from "react";
-import {MemberTable} from "./MembershipTable";
+import { MemberTable } from "./MembershipTable";
 
 export const MembershipApproval = () => {
   const [members, setMembers] = useState([]);
@@ -13,7 +13,11 @@ export const MembershipApproval = () => {
       setMembers([
         {
           _id: "1",
-          userId: { email: "john.doe@example.com", FirstName: "John", LastName: "Doe" },
+          userId: {
+            email: "john.doe@example.com",
+            FirstName: "John",
+            LastName: "Doe",
+          },
           memberId: "M123456789",
           phoneNumber: "+2348012345678",
           appId: "APP123456",
@@ -25,7 +29,11 @@ export const MembershipApproval = () => {
         },
         {
           _id: "2",
-          userId: { email: "jane.smith@example.com", FirstName: "Jane", LastName: "Smith" },
+          userId: {
+            email: "jane.smith@example.com",
+            FirstName: "Jane",
+            LastName: "Smith",
+          },
           memberId: "M987654321",
           phoneNumber: "+2348098765432",
           appId: "APP789012",
@@ -44,9 +52,7 @@ export const MembershipApproval = () => {
     // Replace with actual API call
     alert(`Member ID ${memberId} approved!`);
     setMembers((prev) =>
-      prev.map((m) =>
-        m._id === memberId ? { ...m, isVerified: true } : m
-      )
+      prev.map((m) => (m._id === memberId ? { ...m, isVerified: true } : m))
     );
   };
 
@@ -61,4 +67,3 @@ export const MembershipApproval = () => {
     </div>
   );
 };
-
