@@ -30,6 +30,15 @@ import { VerifyMemberShip } from "./ClientDashboard/verifyMembership";
 import { MembershipApproval } from "./Admin/approveMember";
 import { SaveDashboard } from "./SaveClient/SaveDashboard";
 import PayStack from "./SaveClient/PayStack";
+import LoanReportPage from "./LoanClient/Report";
+import ProductsPage from "./Procurement/ProductPage";
+import CartPage from "./Procurement/CartPage";
+import { CartProvider } from "./Procurement/CartContext";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Navbar from "./Procurement/Navbar";
+import CheckoutPage from "./Procurement/CheckOut";
+import ProcurementHistory from "./Procurement/ProcurementHistory";
 
 const Queryclient = new QueryClient({
   defaultOptions: {
@@ -139,8 +148,57 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/loanReport"
+              element={
+                <ProtectedRoute>
+                  <LoanReportPage />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </Router>
+        <CartProvider>
+          <Router>
+            <Navbar />
+            <Routes>
+              <Route
+                path="/productPage"
+                element={
+                  <ProtectedRoute>
+                    <ProductsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/cartPage"
+                element={
+                  <ProtectedRoute>
+                    <CartPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/checkoutPage"
+                element={
+                  <ProtectedRoute>
+                    <CheckoutPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/procurementHistory"
+                element={
+                  <ProtectedRoute>
+                    <ProcurementHistory />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+            <ToastContainer />
+          </Router>
+        </CartProvider>
+
         <Toaster
           position="top-center"
           gutter={12}
