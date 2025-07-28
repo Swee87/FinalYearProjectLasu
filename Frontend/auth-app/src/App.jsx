@@ -38,7 +38,6 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Navbar from "./Procurement/Navbar";
 import CheckoutPage from "./Procurement/CheckOut";
-import ProcurementHistory from "./Procurement/ProcurementHistory";
 
 const Queryclient = new QueryClient({
   defaultOptions: {
@@ -183,14 +182,6 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <CheckoutPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/procurementHistory"
-                element={
-                  <ProtectedRoute>
-                    <ProcurementHistory />
                   </ProtectedRoute>
                 }
               />

@@ -13,7 +13,6 @@ const Navbar = () => {
         </Link>
         <Link to="/cartPage">Cart ({cartItems.length})</Link>
         <Link to="/checkoutPage">Checkout</Link>
-        <Link to="/procurementHistory">History</Link>
       </nav>
     </div>
   );
