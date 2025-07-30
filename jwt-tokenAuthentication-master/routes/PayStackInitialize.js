@@ -7,9 +7,7 @@
 
 
 
-   mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error('Mongo error:', err));
+
 
     // Initialize Payment
  router.post('/initialize-payment', function(req, res){

@@ -1,4 +1,4 @@
-// 1. Import required packages
+// THIS FILE IS FOR UPLOADING PAYMENT SLIP FOR OBTAINING LOAN TO CLOUDINARY
 import { v2 as cloudinary } from 'cloudinary';
 import { v4 } from 'uuid';
 import { config } from 'dotenv';

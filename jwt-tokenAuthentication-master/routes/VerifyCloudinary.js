@@ -1,4 +1,4 @@
-// 1. Import required packages
+// THIS FILE IS FOR UPLOADING PAYMENT PROOF FOR MEMBERSHIP VERIFICATION  TO CLOUDINARY
 import { v2 as cloudinary } from 'cloudinary';
 import { v4 } from 'uuid';
 import { config } from 'dotenv';
@@ -57,7 +57,7 @@ const getAssetInfo = async (publicId) => {
   }
 };
 
-// 🔁 Export everything
+// Export everything
 export {
   cloudinary,
   uploadToCloudinary,

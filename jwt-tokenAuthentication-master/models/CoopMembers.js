@@ -1,6 +1,5 @@
 // models/CooperativeMember.js
 
-// models/CoopMembers.js
 const mongoose = require("mongoose");
 const generateUniqueAppId = require("../utils/generateAppId");
 const generateUniqueMemberId = require("../utils/generateMemberId");
@@ -17,16 +16,26 @@ const CooperativeMemberSchema = new mongoose.Schema({
     unique: true,
     required: true
   },
- accountNumber: { //Also should be string
+   monthlySavings: {
+    type: Number,
+    required: true,
+  },
+  SavingsType: {
+    type: String,
+       enum: ['salary', 'card'],
+    required: true,
+  },
+ accountNumber: { 
     type: String,
     required: false,
     trim: true,
     validate: {
       validator: function(v) {
-        return /^\d{10}$/.test(v); // Nigerian bank account numbers are usually 10 digits
+        return /^\d{10}$/.test(v);
       },
       message: props => `${props.value} is not a valid account number`
-    }
+    },
+    unique: true // Ensure account numbers are unique
   },
   bankName: {
     type: String,
@@ -49,7 +58,8 @@ const CooperativeMemberSchema = new mongoose.Schema({
         return /^(\+234|0)[7-9][01]\d{8}$/.test(v);
       },
       message: props => `${props.value} is not a valid Nigerian phone number!`
-    }
+    },
+    unique: true // Ensure phone numbers are unique
   },
   appId: {
     type: String,
@@ -68,123 +78,87 @@ const CooperativeMemberSchema = new mongoose.Schema({
     type: Boolean, 
     default: false 
   }
-}, { timestamps: true });
+  ,
+  verifiedAt: {
+  type: Date,
+  default: null
+}
+}, { timestamps: true },
+);
+
+
+
+// models/CoopMembers.js
 
 CooperativeMemberSchema.pre("validate", async function (next) {
   if (!this.isNew) return next();
 
-  const phoneNumber = this.phoneNumber;
-  if (!phoneNumber) {
-    const error = new Error("Phone number is required");
-    console.error("Validation failed:", error.message);
-    return next(error);
-  }
-
-  // Nigerian phone number regex
+  //  Validate phone number
   const phoneRegex = /^(\+234|0)[7-9][01]\d{8}$/;
+  if (!phoneRegex.test(this.phoneNumber)) {
+    return next(new Error("Invalid Nigerian phone number"));
+  }
 
-  if (!phoneRegex.test(phoneNumber)) {
-    const error = new Error(`Invalid Nigerian phone number: ${phoneNumber}`);
-    console.error("Validation failed:", error.message);
+  //  Check if user exists
+  try {
+    const user = await mongoose.model("User").findById(this.userId);
+    if (!user) throw new Error("Referenced user does not exist");
+  } catch (error) {
     return next(error);
   }
 
-  // Only proceed if valid
+  // Generate IDs properly before calling next
   try {
-    if (!this.memberId) this.memberId = await generateUniqueMemberId();
-    if (!this.appId) this.appId = await generateUniqueAppId();
-    next();
-  } catch (err) {
-    console.error("Error generating IDs:", err.message);
-    next(err);
+    if (!this.memberId) {
+      this.memberId = await generateUniqueMemberId();
+    }
+
+    if (!this.appId) {
+      this.appId = await generateUniqueAppId();
+    }
+
+    return next(); //  Only call next after everything has run
+  } catch (error) {
+    return next(error); //  Don't swallow errors silently
   }
 });
 
-// CooperativeMemberSchema.pre("save", async function (next) {
-//   if (!this.isNew) return next();
 
+// CooperativeMemberSchema.pre("validate", async function(next) {
+//   if (!this.isNew) return next();
+  
+//   // Phone Validation
+//   const phoneRegex = /^(\+234|0)[7-9][01]\d{8}$/;
+//   if (!phoneRegex.test(this.phoneNumber)) {
+//     return next(new Error("Invalid Nigerian phone number"));
+//   }
+//   next();
+//   // User Existence Check
 //   try {
-//     this.memberId = await generateUniqueMemberId();
-//     this.appId = await generateUniqueAppId();
+//     const user = await mongoose.model("User").findById(this.userId);
+//     if (!user) throw new Error("Referenced user does not exist");
+//   } catch (error) {
+//     return next(error);
+//   }
+
+//   // ID Generation
+//   try {
+//     if (!this.memberId) {
+//       this.memberId = await generateUniqueMemberId();
+//     }
+//     if (!this.appId) {
+//       this.appId = await generateUniqueAppId();
+//     }
 //     next();
-//   } catch (err) {
-//     next(err);
+//   } catch (error) {
+//     next(error);
 //   }
 // });
 
+CooperativeMemberSchema.pre("save", function (next) {
+  if (this.isModified("isVerified") && this.isVerified && !this.verifiedAt) {
+    this.verifiedAt = new Date();
+  }
+  next();
+});
 module.exports = mongoose.model("CooperativeMember", CooperativeMemberSchema);
-///SECOND ATTEMPT
-// const mongoose = require("mongoose");
-
-// const CooperativeMemberSchema = new mongoose.Schema(
-//   {
-//     userId: {
-//       type: mongoose.Schema.Types.ObjectId,
-//       ref: "User",
-//       required: true,
-//       unique: true,
-//     },
-//     firstName: {
-//       type: String,
-//       required: true,
-//     },
-//     lastName: {
-//       type: String,
-//       required: true,
-//     },
-//     staffType: {
-//       type: String,
-//       required: true,
-//     },
-//     profileNumber: {
-//       type: String,
-//       unique: true,
-//     },
-//     isVerified: {
-//       type: Boolean,
-//       default: false,
-//     },
-//   },
-//   { timestamps: true }
-// );
-
-// module.exports = mongoose.model("CooperativeMember", CooperativeMemberSchema);
-
-
-
-
-
-
-
-// // File: models/CoopMembers.js
-// // This file defines the schema for the CooperativeMember model using Mongoose.
-// // models/StaffProfile.js (for LASU staff records)
-// const mongoose = require('mongoose');
-
-// // models/User.js (for registered users)
-// const CooperativeMemberSchema = new mongoose.Schema({
-//   email: {
-//     type: String,
-//     required: true,
-//     unique: true,
-//     lowercase: true,
-//     trim: true
-//   },
-//   password: {
-//     type: String,
-//     required: true
-//   },
-//   profileNumber: {
-//     type: String,
-//     unique: true
-//   },
-//   firstName: String,
-//   lastName: String,
-//   staffType: String,
-//   isVerified: {
-//     type: Boolean,
-//     default: false
-//   }
-// }, { timestamps: true });
-
-// module.exports = mongoose.model('CooperativeMember', CooperativeMemberSchema);

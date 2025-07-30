@@ -6,9 +6,6 @@ const router = express.Router();
 require('dotenv').config();
 
 
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('MongoDB connected'))
-    .catch(err => console.error('Mongo error:', err));
 
 router.get("/verify-payment/:reference", (req, res) => {
   const reference = req.params.reference;

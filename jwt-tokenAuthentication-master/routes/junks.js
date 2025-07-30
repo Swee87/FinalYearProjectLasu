@@ -468,4 +468,354 @@
 
 // module.exports = router;
 
+// router.get("/appliedLoans", authMiddleware("admin"), async (req, res) => {
+//   try {
+//       const status = req.query.status || "pending";
+//     // 1. Get status from query parameter with default to "pending
+//     if (!WORKFLOW.includes(status)) {
+//       return res.status(400).json({
+//         success: false,
+//         message: `Invalid status. Valid statuses: ${WORKFLOW.join(", ")}`
+//       });
+//     }
+
+//     const pendingLoans = await Loan.find({ status: status })
+//       .populate({
+//         path: "member",
+//         model: "CooperativeMember",
+//         select: "memberId isVerified userId phoneNumber bankName accountNumber  staffType payMentProof appId",
+//         populate: {
+//           path: "userId",
+//           model: "User",
+//           select: "FirstName LastName email"
+//         }
+//       });
+
+//     // Explicit verification check
+//     const validLoans = pendingLoans.filter(loan => 
+//       loan.member?.isVerified && loan.member?.userId
+//     );
+
+//     // Format response with correct member ID
+//     const formattedLoans = validLoans.map(loan => ({
+//       loanId: loan._id,
+//       loanAmount: loan.loanAmount,
+//       monthlySavings: loan.monthlySavings,
+//       repayment: loan.repayment,
+//       about: loan.about,
+//       paySlipUrl: loan.paySlipUrl,
+//       createdAt: loan.created_at,
+//       updatedAt: loan.updated_at,
+//       status: loan.status,
+//       member: {
+//         firstName: loan.member.userId.FirstName,
+//         lastName: loan.member.userId.LastName,
+//         email: loan.member.userId.email,
+//         memberId: loan.member.memberId, // Use custom member ID
+//         userId: loan.member.userId._id,
+//         phoneNumber: loan.member.phoneNumber,
+//         bankName: loan.member.bankName,
+//         accountNumber: loan.member.accountNumber,
+//         staffType: loan.member.staffType,
+//         payMentProof: loan.member.payMentProof,
+//         isVerified: loan.member.isVerified,
+//         appId: loan.member.appId // Use the member's ObjectId as appId
+
+//       },
+//     }));
+
+//     if (formattedLoans.length === 0) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "No qualifying pending loans found.",
+//         debug: {
+//           totalPendingLoans: pendingLoans.length,
+//           populatedMembers: pendingLoans.filter(l => l.member).length
+//         }
+//       });
+//     }
+
+//     return res.status(200).json({
+//       success: true,
+//       count: formattedLoans.length,
+//       data: formattedLoans
+//     });
+//   } catch (error) {
+//     console.error("Error fetching applied loans:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Server error while retrieving pending loans.",
+//       error: error.message
+//     });
+//   }
+// });
+
+
+
+// Workflow array 
+
+// Helper function
+// function isValidTransition(currentStatus, nextStatus) {
+//   const currentIndex = WORKFLOW.indexOf(currentStatus);
+//   const newIndex = WORKFLOW.indexOf(nextStatus);
+//   return newIndex === currentIndex + 1;
+// }
+// // for Approving a loan
+// router.patch("/loanAction", authMiddleware("admin"), async (req, res) => {
+//   const { loanIds, newStatus } = req.body;
+
+//   if (!Array.isArray(loanIds) || loanIds.length === 0) {
+//     return res.status(400).json({
+//       success: false,
+//       message: "Invalid input: No loan IDs provided.",
+//     });
+//   }
+
+//   if (!WORKFLOW.includes(newStatus)) {
+//     return res.status(400).json({
+//       success: false,
+//       message: "Invalid target status.",
+//     });
+//   }
+
+//   try {
+//     let updatedLoans = [];
+//     let errors = [];
+
+//     for (let id of loanIds) {
+//       const loan = await Loan.findById(id);
+
+//       if (!loan) {
+//         errors.push({ id, error: "Loan not found" });
+//         continue;
+//       }
+
+//       if (!isValidTransition(loan.status, newStatus)) {
+//         errors.push({
+//           id,
+//           error: `Invalid transition from "${loan.status}" to "${newStatus}"`,
+//           allowedNext: [WORKFLOW[WORKFLOW.indexOf(loan.status) + 1]],
+//         });
+//         continue;
+//       }
+       
+//       if(loan.status === "approved"){
+//         loan.approvedAt = new Date();
+//       }
+
+//       function updateLoanDates(loan){
+//         if(loan.status === "approved"){
+//           loan.approvedAt = new Date();
+//         }
+
+//         // repayment means the repaymentDuration
+//         if(loan.status === "disbursed"){
+//           loan.disbursedAt = new Date();
+//           const dueDate = new Date(loan.disbursedAt);
+//           dueDate.setMonth(dueDate.getMonth() + loan.repayment);
+//           loan.dueAt = dueDate;
+//         }
+//       }
+      
+//       const loanDateOnSpecificPurpose = await Loan.findById(loanIds)
+//       if(!loanDateOnSpecificPurpose){
+//         errors.push({ id, error: "Loan not found" });
+//         continue;
+//       }
+//       updateLoanDates(loanDateOnSpecificPurpose);
+    
+//       //Update status
+//       const updatedLoan = await Loan.findByIdAndUpdate(
+//         id,
+//         {
+//           status: newStatus,
+//           updatedAt: new Date(),
+//         },
+//         { new: true }
+//       );
+
+//       updatedLoans.push(updatedLoan);
+//     }
+
+//     return res.json({
+//       success: true,
+//       message: `${updatedLoans.length} loans updated successfully.`,
+//       updated: updatedLoans,
+//       errors,
+//     });
+
+//   } catch (error) {
+//     console.error("Error updating loan statuses:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Server error while updating loans.",
+//       error: error.message,
+//     });
+//   }
+// });
+
+
+ //router.post(
+//   'admin-login',
+//   loginLimiter,
+//   authenticateToken('admin'),
+//   [
+//     body('email').isEmail().withMessage('Invalid email'),
+//     body('password')
+//       .exists()
+//       .isLength({ min: 8 })
+//       .withMessage('Password must be at least 8 characters long'),
+//   ],
+//   async (req, res) => {
+//     const errors = validationResult(req);
+//     if (!errors.isEmpty()) {
+//       return res.status(400).json({
+//         status: 'error',
+//         message: 'Not a valid credential',
+//         data: { errors: errors.array() },
+//       });
+//     }
+
+//     try {
+//       const email = req.body.email.trim().toLowerCase();
+//       const password = req.body.password.trim();
+
+//       // Find user by email
+//       const user = await User.findOne({ email });
+//       if (!user) {
+//         return res.status(400).json({
+//           status: 'error',
+//           message: 'You do not have an account',
+//           data: null,
+//         });
+//       }
+
+//       // Check auth method first - BEFORE password comparison
+//       if (user.googleId) {
+//         return res.status(403).json({
+//           status: 'error',
+//           message: ' Kindly Sign-In with Google',
+//           authMethod: 'google',
+//         });
+//       }
+      
+//       // If no password exists (Google-only account)
+//       if (!user.password) {
+//         return res.status(403).json({
+//           status: 'error',
+//           message: 'Please use Google Sign-In',
+//           authMethod: 'google'
+//         });
+//       }
+
+//       // Compare password
+//       const isMatch = await bcrypt.compare(password, user.password);
+//       console.log('Password match:', isMatch);
+//       if (!isMatch) {
+//         return res.status(400).json({
+//           status: 'error',
+//           message: 'Invalid credentials',
+//           data: null,
+//         });
+//       }
+
+//       if (user.googleId && !user.password) {
+//         return res.status(403).json({
+//           status: 'error',
+//           message: 'This account uses Google Sign-In',
+//           authMethod: 'google'
+//         });
+//       }
+
+//       // Check email verification
+//       // if (!user.isVerified) {
+//       //   return res.status(400).json({
+//       //     status: 'error',
+//       //     message: 'Email not verified',
+//       //     data: null,
+//       //   });
+//       // }
+
+//       // testing purpose
+//       if (!user.isVerified && !req.query.allowUnverifiedForTesting) {
+//         return res.status(403).json({
+//           status: 'error',
+//           message: 'Email not verified',
+//           testHint: 'TEST: Add ?allowUnverifiedForTesting=true to bypass' // Testing helper
+//         });
+//       }
+
+      
+
+//       // Generate JWT token
+//       const token = jwt.sign(
+//         { userId: user._id, role: user.role },
+//         process.env.JWT_SECRET,
+//         { expiresIn: '1m' }
+//       );
+
+
+//       res.cookie('admintoken', token, {
+//         httpOnly: true,
+//         secure: process.env.NODE_ENV === 'production',
+//         sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+//         maxAge: 60000, // 1 minute in milliseconds
+//         path: '/',
+//     });
+//       // Return success response
+//       // res.status(200).json({
+//       //   status: 'success',
+//       //   message: 'Login successful',
+//       //   data: {
+//       //     token,
+//       //     user: {
+//       //       _id: user._id,
+//       //       email: user.email,
+//       //       role: user.role,
+//       //       isVerified: user.isVerified,
+//       //     },
+//       //   },
+//       // });
+
+//       // FOR TESTING PURPOSE
+//       res.status(200).json({
+//         status: 'success',
+//         message: 'Login successful (TEST MODE)',
+//         data: {
+//           user: {
+//             _id: user._id,
+//             email: user.email,
+//             role: user.role,
+//             isVerified: user.isVerified,
+//           },
+//           token: token, // Explicitly include for testing
+//           tokenExpiresIn: '1m', // Clear indication
+//           testInfo: {
+//             cookieSet: true,
+//             validationBypass: !!req.query.allowUnverifiedForTesting,
+//             serverTime: new Date().toISOString()
+//           }
+//         }
+//       });
+//     } catch (error) {
+
+
+//       if (error.message.includes('googleId')) {
+//         return res.status(403).json({
+//           status: 'error',
+//           message: 'Authentication method mismatch',
+//           authMethod: 'google'
+//         });
+//       }
+//       console.error('Error during login:', error);
+//       res.status(500).json({
+//         status: 'error',
+//         message: 'Server error',
+//       });
+//     }
+//   }
+// ));
+
+
+
 
