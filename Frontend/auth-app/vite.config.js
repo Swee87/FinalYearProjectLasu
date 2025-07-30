@@ -44,18 +44,18 @@ export default defineConfig({
         secure: false,
         credentials: true
       },
-      // ✅ Added new proxy for /index and other protected routes
+      // Added new proxy for /index and other protected routes
       '/index': {
         target: 'http://localhost:5000',
         changeOrigin: true,
         secure: false,
-        credentials: true // 👈 Ensures cookies are passed through proxy
+        credentials: true // Ensures cookies are passed through proxy
       },
       '/api': {
         target: 'http://localhost:5000',
         changeOrigin: true,
         secure: false,
-        credentials: true // 👈 Ensures cookies are passed through proxy
+        credentials: true // Ensures cookies are passed through proxy
       }
     }
   },

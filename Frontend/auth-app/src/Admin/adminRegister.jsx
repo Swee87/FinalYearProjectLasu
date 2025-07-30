@@ -1,112 +1,6 @@
-// import React,{useState} from "react";
-// import toast from "react-hot-toast";
-// import { useForm } from "react-hook-form";
-// import { useMutation, useQueryClient } from "@tanstack/react-query";
-// import { VerifyOtp } from "../components/VerifyOtp";
-// import { RegisterAdmin } from "../services/authApi";
-// export function AdminRegister() {
-//   const { register, handleSubmit, formState, reset } = useForm();
-//    const queryClient = useQueryClient();
-//    const [showVerifyOtp, setShowVerifyOtp] = useState(false);
-//    const { mutate, isLoading: isSigning } = useMutation({
-//          mutationFn: ({ email, password }) => RegisterAdmin(email, password),
-//          mutationKey: ["RegisterAdmin"],
-//          // data passed here is the data returned from the API
-//          // so we can use it to set the user data in the queryClient
-//          onSuccess: ({data}) => {
-//            if (!data ||  !data.user) {
-//              console.error("Invalid data received from API:", data);
-//              console.log("Data:", data);
-//              toast.error("Failed to process register response");
-//              return;
-//            }
-//            toast.success("Registration was successful");
-//            queryClient.setQueryData(["admin"], data);
-//            setShowVerifyOtp(true); // Show the VerifyOtp component
-           
-//            reset();
-//          },
-//          onError: (error) => {
-//            console.error("Full error object:", error);
-//            toast.error(error?.message|| "Invalid Login credentials");
-//          },
-//        });
-//        const { errors } = formState;
-//   return (
-//     <div className="flex flex-col md:flex-row min-h-screen">
-//       {/* Left Side - Image & Branding */}
-//       <div 
-//         className="relative bg-cover bg-center w-full md:w-1/2"
-//         style={{ backgroundImage: "url('https://images.unsplash.com/photo-1620714223084-8fcacc6dfd8d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80')" }}
-//       >
-//         <div className="absolute inset-0 bg-gradient-to-br from-black/60 to-blue-900/40"></div>
-//         <div className="relative h-full flex flex-col justify-center items-center text-white p-8">
-//           <h1 className="text-4xl font-bold mb-4">Welcome to LasuCoop Admin Portal</h1>
-//           <p className="text-lg opacity-90 text-center">
-//             Admin registration is secure and fast. Join us to manage your savings efficiently.
-//           </p>
-//         </div>
-//       </div>
-
-//       {/* Right Side - Registration Form */}
-//       <div className="w-full md:w-1/2 flex items-center justify-center bg-gray-50 p-6">
-//         <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
-//           <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Admin Registration</h2>
-          
-//           <form className="space-y-4" onSubmit={handleSubmit(async (data) => {
-//       const { email, password } = data;
-//       console.log("Email:", email, "Password:", password);
-//        mutate({ email, password });
-//     })}
-//     onReset={reset}>
-//             {/* Email Input */}
-//             <div>
-//               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-//                 Email Address
-//               </label>
-//               <input
-//                 type="email"
-//                 id="email"
-//                 {...register('email', { required: 'Email is required' })}
-//                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-//                 placeholder="you@example.com"
-//               />
-//                  {errors.email && <p className="text-red-500">{errors.email.message}</p>}
-//             </div>
-
-//             {/* Password Input */}
-//             <div>
-//               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-//                 Password
-//               </label>
-//               <input
-//                 type="password"
-//                 id="password"
-//                 {...register('password', { required: 'Password is required' })}
-//                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-//                 placeholder="••••••••"
-//               />
-//                 {errors.password && <p className="text-red-500">{errors.password.message}</p>}
-//             </div>
-
-//             {/* Submit Button */}
-//             <button
-//               type="submit"
-//               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 shadow-md hover:shadow-lg"
-//             >
-//               Register
-//             </button>
-//           </form>
-//           {showVerifyOtp && <VerifyOtp  onClose={()=>setShowVerifyOtp(false)}/>}
-//         </div>
-//       </div>
-//         {}
-//     </div>
-//   );
-// }
 
 // src/pages/AdminRegister.jsx
-import React from "react";
+import React ,{useState}from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -117,6 +11,7 @@ export function AdminRegister({ onSwitchToLogin }) {
   const { register, handleSubmit, formState, reset } = useForm();
   const queryClient = useQueryClient();
   const [showVerifyOtp, setShowVerifyOtp] = React.useState(false);
+  const [isLoading, setLoading] = useState(false)
 
   const { mutate, isLoading: isSigning } = useMutation({
     mutationFn: ({ email, password ,FirstName, LastName}) => RegisterAdmin(email, password,FirstName, LastName),
@@ -136,6 +31,8 @@ export function AdminRegister({ onSwitchToLogin }) {
   });
 
   const { errors } = formState;
+
+5
 
   return (
     <>
@@ -171,14 +68,6 @@ export function AdminRegister({ onSwitchToLogin }) {
         />
         {errors.LastName && <p className="text-red-500">{errors.LastName.message}</p>}
       </div>
-
-
-
-
-
-
-
-
 
         <div className="space-y-1">
           <label htmlFor="email" className="block text-sm font-medium text-gray-700">

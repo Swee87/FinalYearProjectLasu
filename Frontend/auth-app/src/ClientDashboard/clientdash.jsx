@@ -1,7 +1,15 @@
-import React from 'react';
+import React ,{useState, useEffect} from 'react';
+import toast from "react-hot-toast";
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { getVerifiedMembers } from "../services/AdminRoutes/ApproveMember"
+import { checkLoanEligibility } from '../services/LoanEligible';
+import { getTotalSavingsWithdrawable } from "../services/SavingsTrackApi";
+import { getAllUserLoans } from '../services/UserLoans';
+import { formatCurrency, convertCurrencyString, formatReadableDate } from '../helper';
+import { fetchSavingsTrack } from '../services/SavingsTrackApi';
 import {
   LineChart,
   Line,
@@ -13,40 +21,111 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-// Sample Data for Chart
-const chartData = [
-  { name: 'Jan', savings: 20000, loans: 50000 },
-  { name: 'Feb', savings: 30000, loans: 60000 },
-  { name: 'Mar', savings: 45000, loans: 70000 },
-  { name: 'Apr', savings: 50000, loans: 80000 },
-  { name: 'May', savings: 60000, loans: 90000 },
-  { name: 'Jun', savings: 70000, loans: 100000 },
-];
+
 
 // Recent Transactions Data
-const transactions = [
-  { id: 1, type: 'Savings', amount: '₦10,000', date: '2025-04-01' },
-  { id: 2, type: 'Loan Received', amount: '₦50,000', date: '2025-03-28' },
-  { id: 3, type: 'Procurement', amount: '₦15,000', date: '2025-03-25' },
-  { id: 4, type: 'Loan Repayment', amount: '₦5,000', date: '2025-03-20' },
-  { id: 5, type: 'Savings', amount: '₦8,000', date: '2025-03-18' },
-];
+
 
 export const ClientDashboard = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, isInitialized } = useSelector((state) => state.auth);
+  const user = useSelector((state) => state.auth.user);
+  console.log(user)
+  const [loanData, setLoanData] = useState([])
+
+ const { data: Verifiedmember, isLoading, error } = useQuery({
+  queryKey: ["verifiedMember"],
+  queryFn: getVerifiedMembers,
+  refetchOnWindowFocus: false,
+  retry: 1,
+  onError: (error) => {
+    console.error("Error fetching verified member:", error);
+  },
+});
+
+ const { data:getSavingsWithdrawal , isGetting,  } = useQuery({
+  queryKey: ["getSavingsWithdrawal"],
+  queryFn: getTotalSavingsWithdrawable,
+ refetchOnWindowFocus: false,
+  retry: 1,
+  onError: (error) => {
+    console.error("Error fetching verified member:", error);
+  },
+});
+
+console.log(getSavingsWithdrawal)
+
+
+ const { data:getUserLoan ,isGettingUser  } = useQuery({
+  queryKey: ["getUserLoan"],
+  queryFn:getAllUserLoans,
+  refetchOnWindowFocus: false,
+  retry: 1,
+  onError: (error) => {
+    console.error("Error fetching verified member:", error);
+  },
+});
+
+
+console.log(getUserLoan)
+
+ const { data:fetchSavings ,isFetchingSavingsTrack  } = useQuery({
+  queryKey: ["fetchSavings"],
+  queryFn:fetchSavingsTrack,
+  refetchOnWindowFocus: false,
+  retry: 1,
+  onError: (error) => {
+    console.error("Error fetching verified member:", error);
+  },
+});
+console.log(fetchSavings)
+
+
+const {data: loanEligibility, isLoading: loanLoading, error: loanError} = useQuery({
+  queryKey: ["loanEligibility"],
+  queryFn: checkLoanEligibility,
+  refetchOnWindowFocus: false,
+  retry: 1,
+  onError: (error) => {
+    console.error("Error fetching loan eligibility:", error);
+  },
+});
+console.log(loanEligibility)
+// createdAt
+const transactions = [
+  { id: 1, type: 'Savings', amount: formatCurrency(getSavingsWithdrawal?.data?.totalSaved ?? 0), date: formatReadableDate(getSavingsWithdrawal?.data?.createdAt) ?? 'No savings' },
+  { id: 2, type: 'Loan Received', amount: formatCurrency(convertCurrencyString(getUserLoan?.loans[0]?.loanAmount ?? 0)), date:formatReadableDate(getUserLoan?.loans[0]?.createdAt )?? 'No Loan created' },
+  { id: 3, type: 'Procurement', amount: formatCurrency(convertCurrencyString(getUserLoan?.loans[0]?.procurement ?? 0)), date: '2025-03-25' },
+];
+
+
+// Sample Data for Chart
+const chartData = fetchSavings?.data?.payments?.map((payment) => ({
+  name: payment.month ?? 'Nil',
+  savings: formatCurrency(payment.amountPaid ?? 0),
+  loans: formatCurrency(
+    convertCurrencyString(getUserLoan?.loans?.[0]?.loanAmount ?? 0)
+  )
+})) ?? [];
 
   // Determine if user needs to verify
-  const isVerified = user?.isVerified || false;
 
+  const isVerified =  Verifiedmember?.isVerified
+  console.log(isVerified)
+ const eligibleForLoan = isVerified && (loanEligibility?.eligibility === false )
+  const check = true || eligibleForLoan
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header with Profile - Fixed at Top */}
-      <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-10">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-semibold text-gray-800">Gbewa Cooperative Dashboard 🤌🤌🤌</h1>
+      <header className="bg-white shadow-sm fixed top-15 left-0 right-0 z-10">
+       
+      </header>
+
+      {/* Main Content with Top Padding to Avoid Header Overlap */}
+      <main className="max-w-6xl mx-auto px-6  pb-8 space-y-8">
+       <div className="max-w-6xl mx-auto px-6  flex justify-between items-center">
+          <h1 className="text-2xl font-semibold text-gray-800">Gbewa Dashboard 🤌🤌</h1>
           <div className="flex items-center space-x-4">
-            <span className="text-sm text-gray-600">Welcome back, John Doe!</span>
+            <span className="text-sm text-gray-600">Welcome back, {user?? 'John doe'}!</span>
             <div className="relative group">
               <img
                 src="https://i.pravatar.cc/150?img=5 "
@@ -61,10 +140,6 @@ export const ClientDashboard = () => {
             </div>
           </div>
         </div>
-      </header>
-
-      {/* Main Content with Top Padding to Avoid Header Overlap */}
-      <main className="max-w-6xl mx-auto px-6 pt-24 pb-8 space-y-8">
         {/* 🔔 Stagnant Notification */}
         {!isVerified && (
           <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 rounded-md shadow-sm animate-pulse">
@@ -81,10 +156,15 @@ export const ClientDashboard = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatCard title="Savings" value="₦50,000" color="green" />
-          <StatCard title="Procurement" value="₦120,000" color="blue" />
-          <StatCard title="Loan Amount" value="₦300,000" color="red" />
-          <StatCard title="Repaying" value="₦75,000" color="yellow" />
+         <StatCard
+  title="Savings"
+  value={formatCurrency(getSavingsWithdrawal?.data?.totalSaved ?? 0)}
+  color="green"
+/>
+
+          <StatCard title="Procurement" value={formatCurrency(convertCurrencyString(getUserLoan?.loans[0]?.procurement ?? 0))} color="blue" />
+          <StatCard title="Loan Amount" value={formatCurrency(convertCurrencyString(getUserLoan?.loans[0]?.loanAmount ?? 0))} color="red" />
+          <StatCard title={` for ${getUserLoan?.loans[0]?.repayment ?? 0} months you pay monthly`} value={formatCurrency(convertCurrencyString(getUserLoan?.loans[0]?.repaymentAmount ?? 0))}  color="yellow" />
         </div>
 
         {/* Chart Section */}
@@ -138,16 +218,16 @@ export const ClientDashboard = () => {
           </p>
           <button
             className={`px-6 py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200 ${
-              !isVerified ? 'opacity-50 cursor-not-allowed' : ''
+              eligibleForLoan ? 'opacity-50 cursor-not-allowed' : ''
             }`}
             onClick={() => {
-              if (!isVerified) {
+              if (eligibleForLoan) {
                 toast.error("Please verify your staff status first");
                 return;
               }
               navigate('/loanform');
             }}
-            disabled={!isVerified}
+            disabled={eligibleForLoan}
           >
             Apply for Loan
           </button>

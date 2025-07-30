@@ -1,6 +1,5 @@
 // src/App.js
 
-
 import React,{ useEffect }  from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { startInitialization } from "./redux/authSlice";
@@ -29,6 +28,13 @@ import { LoanDetails } from "./Dashboard/LoanDetails";
 import { ClientDashboard } from "./ClientDashboard/clientdash";
 import { VerifyMemberShip } from "./ClientDashboard/verifyMembership";
 import { MembershipApproval } from "./Admin/approveMember";
+import { Dashboard } from "./Dashboard/AdminHome";
+import { PayStack } from "./SaveClient/PayStack";
+import { SaveDashboard } from "./SaveClient/SaveDashboard";
+import { ClientGeneralDashboard } from "./ClientDashboard/clientHome";
+import { PaystackCallback } from "./SaveClient/PaystackCallback";
+import { LoanOfficerLogin } from "./Staff/LoanOfficer/loanOfficerLogin";
+import { LoanOfficerDashboard } from "./Staff/LoanOfficer/LoanOfficerDashboard";
 
 
 const Queryclient = new QueryClient({
@@ -55,24 +61,26 @@ function App() {
           <Routes>
             <Route path="/register" element={<AuthPage />} />
             <Route path="/" element={<LandingPage />} />
-            <Route path="/user-Dashboard" element={
+            <Route path="admin-home" element={<Dashboard />} />
+            {/* <Route path="/user-Dashboard" element={
               <ProtectedRoute>
                   <ClientDashboard/>
                 </ProtectedRoute>
-            }/>
-            <Route path="/loanSummary" element={<ProtectedRoute><Loan /></ProtectedRoute>} />
+            }/> */}
+            {/* <Route path="/loanSummary" element={<ProtectedRoute><Loan /></ProtectedRoute>} /> */}
             <Route path="/admin" element={<AdminAuthPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/update-password" element={<UpdatePassword />} />
             <Route path="/verifyMembership" element={<VerifyMemberShip/>} />
+            <Route path='/user-Dashboard' element={<ClientGeneralDashboard/>}/>
             <Route path="/loanform" element={<ProtectedRoute>
               <LoanForm />
             </ProtectedRoute>} />
           <Route path="/loanhistory" element={<ProtectedRoute><LoanHistory /></ProtectedRoute>} />
           <Route path="/loanDashboard" element={<ProtectedRoute><LoanDashboard /></ProtectedRoute>} />
-            <Route path="/loanDetail" element={<ProtectedRoute><LoanDetails/></ProtectedRoute>} />
-            <Route path="/membershipApproval" element={<ProtectedRoute><MembershipApproval/></ProtectedRoute>} />
+            <Route path="/loanDetails" element={<ProtectedRoute><LoanDetails/></ProtectedRoute>} />
+            {/* <Route path="/membershipApproval" element={<ProtectedRoute><MembershipApproval/></ProtectedRoute>} /> */}
             <Route
               path="/home"
               element={
@@ -82,6 +90,40 @@ function App() {
                 </ProtectedRoute>
               }
             />
+                <Route
+              path="/loanOfficerLogin"
+              element={
+                
+                  <LoanOfficerLogin />
+                
+              }
+            />
+            <Route
+              path="/loanOfficerDashboard"
+              element={
+                <ProtectedRoute>
+                  <LoanOfficerDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+               <Route
+              path="/payStackPayment"
+              element={
+                <ProtectedRoute>
+                  <PayStack />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/paystack-callback" element={<PaystackCallback />} />
+            {/* <Route
+              path="/savingDashboard"
+              element={
+                <ProtectedRoute>
+                  <SaveDashboard />
+                </ProtectedRoute>
+              }
+            /> */}
           </Routes>
         </Router>
         <Toaster
@@ -102,7 +144,7 @@ function App() {
               },
             },
             error: {
-              duration: 1000,
+              duration: 30000,
               style: {
                 backgroundColor: "#f44336",
                 color: "#ffffff",

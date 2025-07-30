@@ -18,8 +18,7 @@ export function AdminLogin({ onSwitchToRegister }) {
         return;
       }
       toast.success("Login successful");
-    //   window.location.href = "/home";
-    navigate("/loanSummary")
+    navigate("/admin-home");
       reset();
     },
     onError: (error) => {
@@ -28,6 +27,7 @@ export function AdminLogin({ onSwitchToRegister }) {
   });
 
   const { errors } = formState;
+
 
   return (
     <>

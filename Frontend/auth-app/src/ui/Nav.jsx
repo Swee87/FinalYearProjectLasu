@@ -27,7 +27,7 @@ export const Nav = () => {
             }}
           />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-purple-400 text-2xl font-extrabold tracking-tighter">
-            LASUCOOP
+           Gbewa Cooperative
           </span>
         </motion.div>
 

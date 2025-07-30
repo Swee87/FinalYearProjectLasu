@@ -1,14 +1,12 @@
 
 const token = localStorage.getItem("token");
+// THIS IS THE FUNCTION FOR SUBMITTING LOAN DETAILS FOR VERIFICATION
 export async function getLoan(formData) {
     try {
       const res = await fetch("http://localhost:5000/upLoanpayslip/submit-loan", {
         method: "POST",
-        body: formData, // ← Already contains file + form fields
-        credentials: "include", // Include cookies for session management
-        // headers: {
-        //     Authorization: `Bearer ${token}`,
-        //   }
+        body: formData, 
+        credentials: "include", 
       });
   
       if (!res.ok) {

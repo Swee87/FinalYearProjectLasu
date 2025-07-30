@@ -177,109 +177,34 @@ export const LoginAdmin = async (email, password) => {
     }
    
 }
-// Function to handle Google login success
-// export const verifyGoogleToken = async (credential) => {
-//     try {
-//         // Send the Google token to your backend for verification using fetch
-//         const response = await fetch('http://localhost:5000/auth/google', {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json',
-//             },
-//             body: JSON.stringify({ token: credential }),
-//         });
 
-//         if (!response.ok) {
-//             const errorData = await response.json();
-//             throw new Error(errorData.message || 'Failed to verify Google token');
-//         }
-
-//         // Extract user data and JWT from the backend response
-//         const { token, user } = await response.json();
-
-//         return { token, user }; // Return the token and user data
-//     } catch (error) {
-//         console.error('Google login failed:', error.message);
-//         throw error; // Re-throw the error for the caller to handle
-//     }
-// };
-// export const verifyGoogleToken = async (credential) => {
-//     try {
-//         // Send the Google token to your backend for verification using fetch
-//         const response = await fetch('http://localhost:5000/auth/home', { // Correct route
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json', // Specify JSON content type
-//             },
-//             body: JSON.stringify({ token: credential }), // Send the token in JSON format
-//             credentials: 'include',
-//         });
-
-//         console.log('Backend response:', response); // Log the full response
-
-//         if (!response.ok) {
-//             const errorData = await response.text(); // Use `.text()` to capture non-JSON responses
-//             console.error('Error data from backend:', errorData);
-//             throw new Error(errorData || 'Failed to verify Google token');
-//         }
-
-//         // Extract user data and JWT from the backend response
-//         const { token, user } = await response.json();
-
-//         return { token, user }; // Return the token and user data
-//     } catch (error) {
-//         console.error('Google login failed:', error.message);
-//         throw error; // Re-throw the error for the caller to handle
-//     }
-// };
 export const verifyGoogleToken = async (credential) => {
-    try {
-      const response = await fetch('http://localhost:5000/auth/home', { // Note auth
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: credential }),
-        credentials: 'include' // Crucial for cookies
-      });
-  
-      if (!response.ok) throw new Error('Auth failed');
-      
-      return await response.json(); // { user, token }
-    } catch (error) {
-      console.error('Google auth error:', error);
+  try {
+    const response = await fetch('http://localhost:5000/auth/home', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: credential }),
+      credentials: 'include', // For cookies
+    });
+
+    const data = await response.json(); // Parse JSON response
+
+    if (!response.ok) {
+      // Create custom error with backend message
+      const error = new Error(data.message || 'Authentication failed');
+      error.status = response.status; // Attach status (e.g., 409)
       throw error;
     }
-  };
-
-//   export async function fetchCurrentUser() {
-//     try {
-//       const response = await fetch("http://localhost:5000/auth/current", {
-//         method: "GET",
-//         credentials: 'include',
-//         headers: {
-//           'Cache-Control': 'no-cache',
-//           'Content-Type': 'application/json'
-//         },
-//         signal: AbortSignal.timeout(5000)
-//       });
-  
-//       const data = await response.json();
-  
-//       if (!response.ok) {
-//         // Clear cookie and throw error
-//         document.cookie = 'authtoken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-//         throw new Error(data.message || `Authentication failed`);
-//       }
-  
-//       return { user: data.user };
-//     } catch (error) {
-//       console.error("Auth check failed:", error);
-//       throw error;
-//     }
-//   }
+    return data; // { success: true, user, token }
+  } catch (error) {
+    console.error('Google auth error:', error);
+    throw error; // Re-throw for caller to handle (e.g., redirect)
+  }
+};
 
 export async function fetchCurrentUser() {
     try {
-      const response = await fetch("http://localhost:5000/auth/current", {
+      const response = await fetch("http://localhost:5000/auth1/currentProfile", {
         method: "GET",
         credentials: 'include', 
         headers: {
@@ -331,7 +256,7 @@ export async function fetchCurrentUser() {
 // Add this to your authApi service
 export const refreshToken = async () => {
     try {
-      const response = await fetch('http://localhost:5000/auth/refreshToken', {
+      const response = await fetch('http://localhost:5000/auth1/refreshToken', {
         method: 'POST',
         credentials: 'include', // Necessary for cookies
         headers: {
@@ -349,48 +274,23 @@ export const refreshToken = async () => {
       throw error;
     }
   };
-
-
-
-// export async function fetchCurrentUser() {
-//     try {
-//         const res = await fetch("http://localhost:5000/auth/current", {
-//             method: "GET",
-//             credentials: 'include', // Ensure cookies are sent with the request
-//         });
-
-//         if (!res.ok) {
-//             // Handle non-JSON responses gracefully
-//             const errorData = await res.text();
-//             throw new Error(errorData || "Failed to fetch current user");
-//         }
-
-//         const { user } = await res.json();
-//         return { user };
-//     } catch (error) {
-//         console.error("Error fetching current user:", error.message);
-//         throw error; // Rethrow the error for the caller to handle
-//     }
-// }
-// export async function UpdateUserPassword ( token, password ){
-//     try {
-//         const res = await fetch("http://localhost:5000/auth/update-password", {
-//             method: "POST",
-//             body: JSON.stringify({ token , password}),
-//             headers: {
-//                 "Content-Type": "application/json",
-//             },
-//         });
-
-//         if (!res.ok) {
-//             const errorData = await res.json();
-//             throw new Error(errorData.message || "Failed to update password");
-//         }
-
-//         const { status } = await res.json();
-//         return { status };
-//     } catch (error) {
-//         console.error("Error updating password:", error.message);
-//         throw error;
-//     }
-// }
+export const adminRefreshToken = async () => {
+    try {
+        const response = await fetch('http://localhost:5000/auth1/adminRefreshToken', {
+            method: 'POST',
+            credentials: 'include', // Necessary for cookies
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error('Refresh failed');
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Token refresh error:', error);
+        throw error;
+    }
+}

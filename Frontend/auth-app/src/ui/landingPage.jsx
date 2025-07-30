@@ -20,7 +20,7 @@ export  function LandingPage() {
                         transition={{ duration: 0.8, delay: 0.5 }}
                         className="text-5xl font-bold mb-4"
                     >
-                        Welcome to LASU Cooperative Society
+                        Welcome to Gbewa Cooperative Society
                     </motion.h1>
                     <motion.p
                         initial={{ y: 50, opacity: 0 }}
