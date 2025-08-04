@@ -81,6 +81,8 @@ console.log('Now:', new Date());
       req.user = {
         _id: user._id,
         email: user.email,
+        name: user.name || `${user.FirstName} ${user.LastName}`.trim(),
+        picture: user.picture,
         role: user.role,
         googleId: user.googleId,
         isVerified: user.isVerified,

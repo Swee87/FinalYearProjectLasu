@@ -66,7 +66,7 @@ export const ClientGeneralDashboard = () => {
         } lg:translate-x-0 ${baseSidebarWidth}`}
       >
         <div className="flex items-center justify-between p-4 border-b border-indigo-700">
-          {sidebarOpen && <h1 className="text-xl font-bold whitespace-nowrap">Gbewa</h1>}
+          {sidebarOpen && <h1 className="text-xl font-bold whitespace-nowrap">Lasu</h1>}
           <button
             onClick={toggleSidebar}
             className="p-1 rounded-md hover:bg-indigo-700 lg:block hidden"

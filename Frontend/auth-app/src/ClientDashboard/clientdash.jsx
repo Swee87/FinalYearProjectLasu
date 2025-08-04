@@ -123,12 +123,13 @@ const chartData = fetchSavings?.data?.payments?.map((payment) => ({
       {/* Main Content with Top Padding to Avoid Header Overlap */}
       <main className="max-w-6xl mx-auto px-6  pb-8 space-y-8">
        <div className="max-w-6xl mx-auto px-6  flex justify-between items-center">
-          <h1 className="text-2xl font-semibold text-gray-800">Gbewa Dashboard 🤌🤌</h1>
+          <h1 className="text-2xl font-semibold text-gray-800">User Dashboard 🤌🤌</h1>
           <div className="flex items-center space-x-4">
-            <span className="text-sm text-gray-600">Welcome back, {user?? 'John doe'}!</span>
+            <span className="text-sm text-gray-600">Welcome back, {(user?.name ?? user) || 'John doe'}!</span>
             <div className="relative group">
               <img
-                src="https://i.pravatar.cc/150?img=5 "
+                src={user?.picture || 'https://randomuser.me/api/portraits/men/32.jpg'}
+                // src='https://randomuser.me/api/portraits/men/32.jpg'
                 alt="Profile"
                 className="w-10 h-10 rounded-full object-cover border-2 border-blue-500 cursor-pointer"
               />

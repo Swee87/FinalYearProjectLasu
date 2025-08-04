@@ -5,6 +5,7 @@ import {
   FiPieChart, FiSettings, FiCreditCard, FiSearch, FiTarget, FiList,
   FiUserPlus, FiClock, FiBell
 } from 'react-icons/fi';
+import { FaProductHunt } from "react-icons/fa";
 
 import { DashboardPage } from './AdminPages/AdminDashboard';
 import { MembersPage } from './AdminPages/AdminMemberPage';
@@ -25,6 +26,8 @@ import { OnboardUserForm } from '../Admin/OnboardUser';
 import { FetchLoanHistory } from './fetchLoanHistory';
 import { Notification } from './AllNotifications';
 import { SalarySaversList } from '../SaveClient/SaveBySalary/SalarySavers';
+import { ProductDashboard } from '../Admin/AdminProductManagement/ProductDashboard';
+
 
 export const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -59,7 +62,8 @@ export const Dashboard = () => {
     { name: 'Transaction', icon: FiList },
     { name: 'OnboardUser', icon: FiUserPlus },
     { name: 'LoanHistory', icon: FiClock },
-    {name:'SalarySavers', icon : FiDollarSign}
+    {name:'SalarySavers', icon : FiDollarSign},
+    {name: 'Product', icon: FaProductHunt},
   ];
 
   const pageComponents = {
@@ -77,7 +81,8 @@ export const Dashboard = () => {
     Transaction: <AdminTransactions />,
     OnboardUser: <OnboardUserForm />,
     LoanHistory: <FetchLoanHistory />,
-    SalarySavers: <SalarySaversList/>
+    SalarySavers: <SalarySaversList />,
+    Product: <ProductDashboard />
 
   };
 
@@ -91,7 +96,7 @@ export const Dashboard = () => {
         } lg:translate-x-0 ${baseSidebarWidth}`}
       >
         <div className="flex items-center justify-between p-4 border-b border-indigo-700">
-          {sidebarOpen && <h1 className="text-xl font-bold whitespace-nowrap">Gbewa</h1>}
+          {sidebarOpen && <h1 className="text-xl font-bold whitespace-nowrap">Lasu</h1>}
           <button
             onClick={toggleSidebar}
             className="p-1 rounded-md hover:bg-indigo-700 lg:block hidden"

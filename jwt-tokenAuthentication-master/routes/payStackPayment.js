@@ -1,20 +1,20 @@
-    const express = require('express');
-    const authMiddleware = require("../middleware/authMiddleware");
-    const Transaction = require('../models/PayStackTransaction')
-    const SavingsTrack = require('../models/SavingsTrack');
-    const UserSavings = require('../models/UsersTotalSavings');
-    const app = express();
-    const router = express.Router();
-    require('dotenv').config();
-    const cors = require('cors');
-    app.use(cors({
-           origin: 'http://localhost:5173',
-          allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control']
-        }));
-    
-    app.use(express.json());
+  
+const express = require('express');
+const authMiddleware = require("../middleware/authMiddleware");
+const Transaction = require('../models/PayStackTransaction');
+const SavingsTrack = require('../models/SavingsTrack');
+const UserSavings = require('../models/UsersTotalSavings');
+require('dotenv').config();
+const cors = require('cors');
+const app = express();
+const router = express.Router();
 
+app.use(cors({
+  origin: 'http://localhost:5173',
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control']
+}));
 
+app.use(express.json());
 
 // SSE clients array
 const clients = [];
@@ -26,12 +26,12 @@ function notifyAdmins(transaction) {
   });
 }
 
-    ///////USERS/////////////
-  router.post('/initialize-payment', authMiddleware('user'), async (req, res) => {
+///////USERS/////////////
+router.post('/initialize-payment', authMiddleware('user'), async (req, res) => {
   const { email, amount } = req.body;
   if (!email || !amount || typeof amount !== 'number' || amount <= 0) {
-  return res.status(400).json({ error: "Invalid amount or email" });
-}
+    return res.status(400).json({ error: "Invalid amount or email" });
+  }
   try {
     const response = await fetch('https://api.paystack.co/transaction/initialize', {
       method: "POST",
@@ -39,7 +39,7 @@ function notifyAdmins(transaction) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
       },
-      body: JSON.stringify({ amount: amount * 100, email , callback_url: 'http://localhost:5173/paystack-callback'}) 
+      body: JSON.stringify({ amount: amount * 100, email, callback_url: 'http://localhost:5173/paystack-callback' })
     });
 
     if (!response.ok) {
@@ -122,67 +122,62 @@ router.get('/verify-payment/:reference', authMiddleware('user'), async (req, res
 
     // Save to SavingsTrack if successful
     if (data.status === 'success') {
-  const now = new Date();
-  const monthName = now.toLocaleString('default', { month: 'long' });
-  const year = now.getFullYear();
+      const now = new Date();
+      const monthName = now.toLocaleString('default', { month: 'long' });
+      const year = now.getFullYear();
 
-  const existingTrack = await SavingsTrack.findOne({
-    user: userId,
-    'payments.month': monthName,
-    'payments.year': year
-  });
+      const existingTrack = await SavingsTrack.findOne({
+        user: userId,
+        'payments.month': monthName,
+        'payments.year': year
+      });
 
-  if (!existingTrack) {
-    await SavingsTrack.findOneAndUpdate(
-      { user: userId },
-      {
-        $push: {
-          payments: {
-            month: monthName,
-            year,
-            amountPaid: data.amount / 100,
-            datePaid: now,
-            paidPerMonth: true
-          }
-        }
-      },
-      { upsert: true, new: true }
-    );
-  }
-
-  // Update total savings
-
-try {
-  const updated = await UserSavings.findOneAndUpdate(
-    { user: userId },
-    {
-      $inc: {
-        totalSaved: data.amount / 100,
-        withdrawableBalance: data.amount / 100
-      },
-      $set: {
-        lastUpdated: new Date()
+      if (!existingTrack) {
+        await SavingsTrack.findOneAndUpdate(
+          { user: userId },
+          {
+            $push: {
+              payments: {
+                month: monthName,
+                year,
+                amountPaid: data.amount / 100,
+                datePaid: now,
+                paidPerMonth: true
+              }
+            }
+          },
+          { upsert: true, new: true }
+        );
       }
-    },
-    { upsert: true, new: true }
-  );
 
-  console.log("Updated UserSavings:", updated);
-} catch (err) {
-  console.error("Failed to update UserSavings:", err.message);
-}
+      // Update total savings
+      try {
+        const updated = await UserSavings.findOneAndUpdate(
+          { user: userId },
+          {
+            $inc: {
+              totalSaved: data.amount / 100,
+              withdrawableBalance: data.amount / 100
+            },
+            $set: {
+              lastUpdated: new Date()
+            }
+          },
+          { upsert: true, new: true }
+        );
 
-
-}
-return res.status(200).json({ message: 'Transaction verified and savings updated', data: transaction });
+        console.log("Updated UserSavings:", updated);
+      } catch (err) {
+        console.error("Failed to update UserSavings:", err.message);
+      }
+    }
+    return res.status(200).json({ message: 'Transaction verified and savings updated', data: transaction });
 
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Verification failed', details: err.message });
   }
 });
-
-
 
 /////THIS IS FOR ADMIN /////
 router.get('/admin/transactions', authMiddleware('admin'), async (req, res) => {
@@ -209,7 +204,6 @@ router.get('/admin/transactions', authMiddleware('admin'), async (req, res) => {
   }
 });
 
-
 router.get('/admin/subscribe', authMiddleware('admin'), (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
@@ -224,6 +218,6 @@ router.get('/admin/subscribe', authMiddleware('admin'), (req, res) => {
   });
 });
 
-    module.exports = router;
+module.exports = router;
 
 

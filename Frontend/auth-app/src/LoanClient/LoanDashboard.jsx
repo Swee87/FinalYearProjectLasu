@@ -1,10 +1,8 @@
-
 import React, { useState } from "react";
 import { FaMoneyBill, FaHistory } from "react-icons/fa";
-import welcomeLoan from '../assets/images/welcomeLoan.jpeg'
+import welcomeLoan from "../assets/images/welcomeLoan.jpeg";
 import { LoanModal } from "./LoanModal";
 import { Link } from "react-router-dom";
-
 
 export function LoanDashboard() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -59,7 +57,7 @@ export function LoanDashboard() {
           </div>
 
           {/* Right Side - Image */}
-          <div className="hidden lg:flex justify-center">
+          <div className="sr-only lg:not-sr-only justify-center">
             <img
               src={welcomeLoan}
               alt="Welcome to Loan Dashboard"
@@ -91,7 +89,9 @@ export function LoanDashboard() {
 function StatCard({ title, subtitle, value, bgColor, textColor, shadow }) {
   return (
     <div
-      className={`${bgColor} ${textColor} ${shadow || ""} p-6 rounded-2xl transition-transform duration-300 hover:shadow-lg`}
+      className={`${bgColor} ${textColor} ${
+        shadow || ""
+      } p-6 rounded-2xl transition-transform duration-300 hover:shadow-lg`}
     >
       <h2 className="text-2xl md:text-3xl font-bold">{title}</h2>
       <p className="text-sm md:text-base opacity-90 mt-1">{subtitle}</p>

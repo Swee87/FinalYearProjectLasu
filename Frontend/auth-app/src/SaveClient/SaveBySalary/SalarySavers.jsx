@@ -11,7 +11,6 @@ const MONTHS = [
 export const SalarySaversList = () => {
   const [page, setPage] = useState(0);
   const itemsPerPage = 10;
-
   const queryClient = useQueryClient();
 
   const { data, isLoading, isError, error } = useQuery({
@@ -70,7 +69,6 @@ export const SalarySaversList = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-100">
-              {console.log(paginatedData)}
               {paginatedData.map((member) => (
                 <SaverRow key={member.user._id} member={member} queryClient={queryClient} />
               ))}
@@ -104,19 +102,15 @@ export const SalarySaversList = () => {
 const SaverRow = ({ member, queryClient }) => {
   const regDate = new Date(member.user.createdAt);
   const regYear = regDate.getFullYear();
-  const regMonth = regDate.getMonth(); // 0-indexed
-
+  const regMonth = regDate.getMonth();
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth();
-
   const [selectedYear, setSelectedYear] = useState(currentYear);
 
   const years = Array.from({ length: currentYear - regYear + 2 }, (_, i) => regYear + i);
-
   const payments = member.savingsTrack?.payments || [];
   const yearPayments = payments.filter(p => p.year === selectedYear);
 
-  // Determine which months to show
   const monthsToShow = MONTHS.filter((_, index) => {
     if (selectedYear < regYear) return false;
     if (selectedYear === regYear && index < regMonth) return false;
@@ -126,7 +120,6 @@ const SaverRow = ({ member, queryClient }) => {
 
   const paidMonths = yearPayments.filter(p => p.paidPerMonth && monthsToShow.includes(p.month)).length;
   const progress = Math.round((paidMonths / monthsToShow.length) * 100) || 0;
-
   const progressColor = progress === 100
     ? 'bg-green-500'
     : progress >= 75
@@ -184,13 +177,10 @@ const SaverRow = ({ member, queryClient }) => {
               <PhoneIcon className="h-4 w-4 text-gray-400 mr-2" />
               <span>{member.phoneNumber}</span>
             </div>
-
             <div className="flex items-center text-sm text-gray-600">
-              {/* <PhoneIcon className="h-4 w-4 text-gray-400 mr-2" /> */}
               <span>{member.memberID}</span>
             </div>
             <div className="flex items-center text-sm text-gray-600">
-              {/* <PhoneIcon className="h-4 w-4 text-gray-400 mr-2" /> */}
               <span>{member.appId}</span>
             </div>
           </div>
@@ -199,8 +189,8 @@ const SaverRow = ({ member, queryClient }) => {
 
       {/* Monthly Payments */}
       <td className="px-6 py-5 min-w-[240px]">
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-1">
+        <div className="flex flex-col space-y-4">
+          <div className="flex items-center justify-between">
             <label htmlFor="year-select" className="text-sm font-medium text-gray-700">
               Select Year:
             </label>
@@ -218,21 +208,21 @@ const SaverRow = ({ member, queryClient }) => {
               <option key={year} value={year}>{year}</option>
             ))}
           </select>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-          {monthsToShow.map((month) => (
-            <MonthButton
-              key={`${month}-${selectedYear}`}
-              month={month}
-              member={member}
-              selectedYear={selectedYear}
-              queryClient={queryClient}
-              regMonth={regMonth}
-              regYear={regYear}
-              currentMonth={currentMonth}
-              currentYear={currentYear}
-            />
-          ))}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+            {monthsToShow.map((month) => (
+              <MonthButton
+                key={`${month}-${selectedYear}`}
+                month={month}
+                member={member}
+                selectedYear={selectedYear}
+                queryClient={queryClient}
+                regMonth={regMonth}
+                regYear={regYear}
+                currentMonth={currentMonth}
+                currentYear={currentYear}
+              />
+            ))}
+          </div>
         </div>
       </td>
 
@@ -302,18 +292,16 @@ const MonthButton = ({
   currentMonth,
   currentYear
 }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const monthIndex = MONTHS.indexOf(month);
   const isPaid = member.savingsTrack?.payments?.some(
     p => p.month === month && p.year === selectedYear && p.paidPerMonth
   );
-
   const isBeforeRegistration =
     selectedYear < regYear || (selectedYear === regYear && monthIndex < regMonth);
-
   const isFutureMonth =
     selectedYear > currentYear || (selectedYear === currentYear && monthIndex > currentMonth);
-
-  const disabled = isBeforeRegistration || isFutureMonth;
+  const disabled = isBeforeRegistration || isFutureMonth || isPaid;
 
   const mutation = useMutation({
     mutationFn: () => updatePaymentStatus(member.user._id, {
@@ -323,40 +311,81 @@ const MonthButton = ({
     }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['salarySavers'] });
+      setIsModalOpen(false);
     },
   });
 
+  const handleClick = () => {
+    if (!disabled && !isPaid) {
+      setIsModalOpen(true);
+    }
+  };
+
+  const confirmPayment = () => {
+    mutation.mutate();
+  };
+
   return (
-    <button
-      onClick={() => !disabled && mutation.mutate()}
-      disabled={disabled || mutation.isLoading}
-      title={
-        isBeforeRegistration
-          ? `User registered in ${MONTHS[regMonth]} ${regYear}`
-          : isFutureMonth
-          ? "Cannot mark future months"
-          : `Mark ${month} as ${isPaid ? 'unpaid' : 'paid'}`
-      }
-      className={`
-        relative flex flex-col items-center justify-center h-14 rounded-lg border transition-all
-        ${disabled ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed' : ''}
-        ${isPaid ? 'bg-green-50 border-green-200 text-green-800 hover:bg-green-100' : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'}
-        ${selectedYear === currentYear && monthIndex === currentMonth ? 'ring-2 ring-indigo-500 ring-offset-1' : ''}
-        ${mutation.isLoading ? 'cursor-wait opacity-75' : ''}
-      `}
-    >
-      <span className="text-xs font-medium mb-1">{month.substring(0, 3)}</span>
-      {isPaid ? (
-        <CheckIcon className="h-4 w-4 text-green-500" />
-      ) : (
-        <span className="text-xs opacity-70">—</span>
-      )}
-      {mutation.isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-70">
-          <div className="w-4 h-4 border-t-2 border-indigo-500 rounded-full animate-spin"></div>
+    <>
+      <button
+        onClick={handleClick}
+        disabled={disabled || mutation.isLoading}
+        title={
+          isBeforeRegistration
+            ? `User registered in ${MONTHS[regMonth]} ${regYear}`
+            : isFutureMonth
+            ? "Cannot mark future months"
+            : isPaid
+            ? `Already marked as paid`
+            : `Mark ${month} as paid`
+        }
+        className={`
+          relative flex flex-col items-center justify-center h-14 rounded-lg border transition-all
+          ${disabled ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed' : ''}
+          ${isPaid ? 'bg-green-50 border-green-200 text-green-800' : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'}
+          ${selectedYear === currentYear && monthIndex === currentMonth ? 'ring-2 ring-indigo-500 ring-offset-1' : ''}
+          ${mutation.isLoading ? 'cursor-wait opacity-75' : ''}
+        `}
+      >
+        <span className="text-xs font-medium mb-1">{month.substring(0, 3)}</span>
+        {isPaid ? (
+          <CheckIcon className="h-4 w-4 text-green-500" />
+        ) : (
+          <span className="text-xs opacity-70">—</span>
+        )}
+        {mutation.isLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-70">
+            <div className="w-4 h-4 border-t-2 border-indigo-500 rounded-full animate-spin"></div>
+          </div>
+        )}
+      </button>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-transparent backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white/10 backdrop-blur-md rounded-lg p-6 shadow-lg border border-white/20 max-w-sm w-full">
+            <h3 className="text-lg font-semibold text-black">Confirm Payment</h3>
+            <p className="mt-2 text-sm text-black">
+              Are you sure you want to mark {month} {selectedYear} as paid for {member.user.FirstName} {member.user.LastName}?
+              This action cannot be undone.
+            </p>
+            <div className="mt-6 flex justify-end space-x-3">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-300 bg-black rounded-md hover:bg-blue-600 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmPayment}
+                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition-colors"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
         </div>
       )}
-    </button>
+    </>
   );
 };
 

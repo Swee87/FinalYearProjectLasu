@@ -16,7 +16,7 @@ export function LoanModal({ onClose }) {
         }
       }}
     >
-      <div className="mt-8 bg-blue-400 rounded-xl w-[100%] lg:w-[50%] px-6 py-2 shadow-lg text-white shadow shadow-blue-600">
+      <div className="mt-8 bg-blue-400 rounded-xl w-[100%] lg:w-[50%] px-6 py-2 shadow-lg text-white shadow-blue-600">
         <div className="block lg:flex justify-between m-4">
           <p className="text-2xl font-bold">Loan Request Form </p>
           <button className="cursor-pointer" onClick={() => onClose()}>
@@ -55,5 +55,3 @@ export function LoanModal({ onClose }) {
     </div>
   );
 }
-
-

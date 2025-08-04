@@ -8,6 +8,8 @@ const { Server } = require("socket.io");
 const http = require('http');
 const cors = require('cors');
 const app = express();
+const router = express.Router();
+
 
 const server = http.createServer(app); // Create HTTP server
 const io = new Server(server, {
@@ -39,6 +41,7 @@ app.use(cors({
 }));
 
 // Middleware
+router.use(express.json());
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(helmet({
@@ -69,17 +72,24 @@ const SavingsRoutes = require('./routes/Savings');
 const payStackPaymentRoute = require('./routes/payStackPayment')
 const Notification = require('./routes/Notification')
 const salarySavings = require('./routes/SalarySavings')
+const productRoutes = require('./routes/productEndpoint');
 // const reportRoutes = require('./routes/report');
 //const payStackRoutes = require('./routes/PayStackInitialize');
 const reportRoutes = require('./routes/report');
 app.use('/report', reportRoutes); 
 app.use('/Notification', Notification)
 app.use('/SalarySavings', salarySavings)
+app.use('/productEndpoint', productRoutes);
+
+// const payStackRoutes = require('./routes/PayStackInitialize');
+// const payStackVerifyRoutes = require('./routes/PayStackVerify');
+
 
 app.use('/CoopAuth', cooperativeRoutes);
 app.use('/auth1', authRoutes);
 app.use('/auth', OAuth2Routes);
 app.use('/verifyCoop', verifyCoopRoutes);
+// <<<<<<< HEAD
 app.use('/upLoanpayslip', loanRoutes);
 app.use('/getLoanRoutes', applyloan);
 app.use('/bankList', bankListRoutes);
@@ -89,6 +99,10 @@ app.use('/Savings', SavingsRoutes);
 // app.use('/report', reportRoutes);
 // app.use('/PayStackInitialize', payStackRoutes);
 // app.use('/PayStackVerify', payStackVerifyRoutes);
+// =======
+// app.use('/PayStackInitialize', payStackRoutes);
+// app.use('/PayStackVerify', payStackVerifyRoutes);
+// >>>>>>> 23dd0bca2b2e89b96a2a62e4292bcad43d0f4c45
 
 // Health check
 app.get('/health', (req, res) => res.json({ status: 'OK' }));

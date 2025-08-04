@@ -8,6 +8,7 @@ import { GoogleLogin } from '@react-oauth/google';
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../redux/authSlice";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "react-router-dom";
 
 export const LoginPage = () => {
   const dispatch = useDispatch();
@@ -15,6 +16,10 @@ export const LoginPage = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
+   const location = useLocation();
+
+  const routeUserType = location.state?.userType;
+  const storedUserType = sessionStorage.getItem("userType");
   const loginMutation = useMutation({
     mutationFn: ({ email, password }) => Login(email, password),
     mutationKey: ["login"],
@@ -42,13 +47,28 @@ export const LoginPage = () => {
 
   const { errors } = formState;
 
+const handleLoginSuccess = () => {
+  //  Get userType from sessionStorage
+  const userType = sessionStorage.getItem("userType") || "member";
+
+  // 👇 Redirect based on userType
+  const redirectTo = userType === "oneOffCustomer" ? "/customer-dashboard" : "/user-Dashboard";
+  console.log("Redirecting to:", redirectTo);
+
+  sessionStorage.removeItem("userType");
+  navigate(redirectTo);
+};
+
+
   const handleGoogleLoginSuccess = async (credentialResponse) => {
     try {
       const { credential } = credentialResponse;
       const { token, user } = await verifyGoogleToken(credential);
       dispatch(setCredentials({ token, user }));
       queryClient.setQueryData(["user"], user);
-      navigate('/user-Dashboard');
+      // navigate('/user-Dashboard');
+      handleLoginSuccess();
+      reset();
       toast.success("Google login successful");
     } catch (error) {
       toast.error(error?.message || "Google login failed");

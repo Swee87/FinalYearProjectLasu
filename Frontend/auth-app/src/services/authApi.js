@@ -204,7 +204,7 @@ export const verifyGoogleToken = async (credential) => {
 
 export async function fetchCurrentUser() {
     try {
-      const response = await fetch("http://localhost:5000/auth1/currentProfile", {
+      const response = await fetch("http://localhost:5000/auth/current", {
         method: "GET",
         credentials: 'include', 
         headers: {
@@ -217,7 +217,7 @@ export async function fetchCurrentUser() {
   
       if (!response.ok) {
         if (response.status === 401) {
-          document.cookie = 'authtoken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+          document.cookie = 'accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         }
         throw new Error(data.message || `Authentication failed (${response.status})`);
       }
