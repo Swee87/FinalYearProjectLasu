@@ -4,6 +4,8 @@ import {
   FiPieChart, FiSettings, FiCreditCard, FiSearch,FiTarget 
 } from 'react-icons/fi';
 import { GrTransaction } from "react-icons/gr";
+import { MdSavings } from "react-icons/md";
+import { MdAttachMoney } from "react-icons/md"
 
 
 import { AllLoan } from '../LoanClient/AllLoans';
@@ -15,6 +17,9 @@ import { VerifyMemberShip } from './verifyMembership';
 import { SaveDashboard } from '../SaveClient/SaveDashboard';
 import { UserReportPage } from './UserReportPage';
 import { UserLoanDetails } from '../LoanClient/usersLoanDetail';
+import { LoanReport } from './LoanReport';
+import { SavingsReport } from './SavingsReport';
+
 
 export const ClientGeneralDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -36,6 +41,8 @@ export const ClientGeneralDashboard = () => {
     { name: 'Reports', icon: FiPieChart },
     { name: 'Settings', icon: FiSettings },
     { name: 'LoanDetails', icon: FiTarget },
+    { name:'SavingsReport', icon: MdSavings },
+    { name: 'LoanReport', icon: MdAttachMoney },
     {name: 'Transaction History', icon:GrTransaction }
   ];
 
@@ -49,6 +56,9 @@ export const ClientGeneralDashboard = () => {
     Reports: <UserReportPage />,
     Settings: <SettingsPage />,
     Wallets: <WalletsPage />,
+    LoanReport: <LoanReport />,
+    SavingsReport: <SavingsReport />,
+    LoanReport: <LoanReport />,
     // Procurement: <ProcurementPage />,
     // ShareCapital: <ShareCapitalPage />,
     // Stats: <StatsCard />,

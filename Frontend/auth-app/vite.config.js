@@ -106,7 +106,7 @@ export default defineConfig({
       }
     }
   },
-  // ✅ Add this section for SPA fallback
+  
   build: {
     rollupOptions: {
       output: {
